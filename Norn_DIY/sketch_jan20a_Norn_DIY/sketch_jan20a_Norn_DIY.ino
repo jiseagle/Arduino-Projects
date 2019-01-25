@@ -1,5 +1,6 @@
 // Include the Servo library
 #include <Servo.h>
+#include <SoftwareSerial.h>
 
 // Define HC-SR04 Trig pin, and Echo pin
 const int trigPin = 10; 
@@ -8,14 +9,13 @@ const int echoPin = 11;
 // Variables for calculate distance and duration
 unsigned int distance;
 
-// Create Servo project
-Servo LeftHipServo;
-Servo LeftAnkleServo;
-Servo RightHipServo;
-Servo RightAnkleServo; 
 
 // Other parameter definition
 #define baudrate 9600
+#define BTbaudrate 38400
+#define txPin 3          // define Serial Port TX PIN
+#define rxPin 2          // define Serial Port RX PIN
+
 int j = 0;
 // Incudes sub functions
 unsigned int distCal();
@@ -24,15 +24,31 @@ void MoveForward1();
 void MoveForward2();
 void MoveForward3();
 void MoveBackward2();
-void DanceOne();
+void SlideStep();
+void BalletStand();
+void ShakingLeftLeg();
+void ShakingRightLeg();
 void SumoRight();
 void SumoLeft();
 void ContSumo();
+
+// Create Servo project
+Servo LeftHipServo;
+Servo LeftAnkleServo;
+Servo RightHipServo;
+Servo RightAnkleServo; 
+
+// Create BT Project
+SoftwareSerial BT(txPin, rxPin);
 
 void setup() {
   pinMode(trigPin, OUTPUT);     // set pinMode for Trig pin as output
   pinMode(echoPin, INPUT);      // set pinMode for Echo pin as input
   Serial.begin(baudrate);           // set serial port start, and baud rate=9600
+  
+  pinMode(txPin, OUTPUT);
+  pinMode(rxPin, INPUT);
+  BT.begin(BTbaudrate);
 
   // attach pin 4, 5, 6, 7 for Sevo
   LeftHipServo.attach(4);  
@@ -47,11 +63,16 @@ int c = 0;
 
 void loop() {
 
-  if(Serial.available() > 0)
+  if(BT.available() > 0)  //Check if BT send message to Norn_DIY
+  {
+    c = BT.read();
+    Serial.println(c);
+  }
+
+  else if (Serial.available() > 0) // Check if Serial Port send message to Norn_DIY
   {
     c = Serial.read();
     Serial.println(c);
-
     if(c==48)
     {
       FootInit();
@@ -64,21 +85,20 @@ void loop() {
 
     if(c==50)
     {
+      while(1){
+      distance=distCal();
 
-      for (int i = 1; i < 3; i++){
-        MoveForward2();
+      if (distance >= 10) MoveForward2();
+      else if (distance <= 10) MoveBackward2();
+
+      c= Serial.read();
+      if(c == 48) break;
       }
-
-      for (int i = 1; i <5; i++){
-        DanceOne();
-      }
-
-      ContSumo();
     }
 
     if(c==51)
     {
-
+      
 
     }
 
@@ -155,7 +175,7 @@ void MoveForward2(){            // 墊腳尖往前走
 }
 
 void MoveForward3(){            // 翹腳尖往前走
-        LeftAnkleServo.write(60);
+      LeftAnkleServo.write(60);
       delay(300);
       LeftHipServo.write(120);
       RightHipServo.write(120);
@@ -184,7 +204,7 @@ void MoveBackward2(){
       delay(300);
 }
 
-void DanceOne(){
+void SlideStep(){
         for (int i = 90; i <141; i++){
         LeftHipServo.write(i);
         LeftAnkleServo.write(i);
@@ -228,6 +248,36 @@ void DanceOne(){
         LeftAnkleServo.write(90);
         delay(5);
       }
+}
+
+void BalletStand(){
+  for (int i = 0; i<61; i++){
+    LeftAnkleServo.write(90+i);
+    RightAnkleServo.write(90-i);
+    delay(5);
+  }
+}
+
+void ShakingLeftLeg(){
+       LeftAnkleServo.write(60);
+       delay(70);
+       LeftAnkleServo.write(90);
+       delay(70);
+       LeftAnkleServo.write(120);
+       delay(70);
+       LeftAnkleServo.write(90);
+       delay(70);
+}
+
+void ShakingRightLeg(){
+       RightAnkleServo.write(120);
+       delay(70);
+       RightAnkleServo.write(90);
+       delay(70);
+       RightAnkleServo.write(60);
+       delay(70);
+       RightAnkleServo.write(90);
+       delay(70);
 }
 
 void ContSumo(){
