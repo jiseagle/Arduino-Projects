@@ -343,7 +343,24 @@ void Norn::TipToeSwing(int Steps, int T, int h)
 }
 
 /* ======================================================= */
-/* getDistance from UltraSonicSensor                       */
+/* Motion Name: Jitter (Hip rotates)                       */
+/* Parameters:                                             */
+/*      steps: Number of Steps                             */
+/*          T: Period                                      */
+/*          h: Amount of Hip rotation                      */
+/* ======================================================= */
+void Norn::Jitter(int Steps, int T, int h)
+{
+      h = min(h,35); //set h <=35 to avoid feet conflicting
+      int A[4]= {h, h, 0, 0};
+      int O[4] = {0, 0, 0, 0};
+      double phase_diff[4] = {DEG2RAD(-90), DEG2RAD(90), 0, 0};
+
+      execution(A,O,T,phase_diff, Steps);
+}
+
+/* ======================================================= */
+/* getDistance from Ultra Sonic Sensor                     */
 /* ======================================================= */
 float Norn::getDistance()
 {

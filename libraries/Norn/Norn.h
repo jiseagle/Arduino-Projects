@@ -43,6 +43,7 @@ class Norn
      void UPDown(int Steps, int T, int h);                 //UPDown
      void swing(int Steps, int T, int h);                  //swing
      void TipToeSwing(int Steps, int T, int h);            //TipToeSwing
+     void Jitter(int Steps, int T, int h);                 //Jitter           
 
      /* --- Avoidance                                  --- */
      float getDistance();                                  //getDistance() from Ultra Sonic Sensor
