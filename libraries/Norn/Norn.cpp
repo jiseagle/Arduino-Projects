@@ -40,11 +40,10 @@ void Norn::init(int YL, int YR, int RL, int RR, bool loadcalibration, int TrigPi
     servo_position[i]=90;
   }
   
-  if(loadcalibration == true){           //If load calibrated data, then reset position with trim value.
-     int resetservos[4] = {90,90,90,90}; //All servos reset to 90 degree reset position.
-     moveServos(500, resetservos);
-   }
-
+  //set Norn's Servo move to reset position
+  int resetservos[4] = {90,90,90,90}; 
+  moveServos(500, resetservos);
+ 
 }
 
 /*************************************************/
@@ -186,7 +185,7 @@ void Norn::RestReq()
 /*          T: Period                                      */
 /*        dir: (Directions) FORWARD/BACKWARD               */
 /* ======================================================= */
-void Norn::walk(float steps, int T, int dir)
+void Norn::walk(float Steps, int T, int dir)
 {
   /* -- oscillator parameters for walking               -- */
   /* -- Hip Servos are in phase                         -- */
@@ -197,14 +196,14 @@ void Norn::walk(float steps, int T, int dir)
   int A[4] = {30, 30, 20, 20};
   int O[4] = {0, 0, 4, -4};
   // phase_diff is radians = degree*(PI/180)
-  double phase_diff[4] = {0, 0, (dir * -90)*(31415926/1000000/180), (dir * -90)*(31415926/1000000/180)};
+  double phase_diff[4] = {0, 0, DEG2RAD(dir * -90), DEG2RAD(dir * -90)};
  
-  if(steps == 0){
+  if(Steps == 0){
    while(1){
      execution(A, O, T, phase_diff, 1);
     }
   }
-  else execution(A, O, T, phase_diff, 1);
+  else execution(A, O, T, phase_diff, Steps);
 }
 
 /* ======================================================= */
@@ -215,7 +214,7 @@ void Norn::walk(float steps, int T, int dir)
 /*        dir: (Directions) FORWARD/BACKWARD               */
 /*       turn: Left/Right                                  */
 /* ======================================================= */
-void Norn::Turn(float steps, int T, int turn, int dir)
+void Norn::Turn(float Steps, int T, int turn, int dir)
 {
 
   /* -- oscillator parameters for turn                  -- */
@@ -230,7 +229,7 @@ void Norn::Turn(float steps, int T, int turn, int dir)
   int A[4] = {30, 30, 20, 20};
   int O[4] = {0, 0, 7, -7};
   // phase_diff is radians = degree*(PI/180)
-  double phase_diff[4] = {0, 0, (dir * -90)*(31415926/1000000/180), (dir * -90)*(31415926/1000000/180)};
+  double phase_diff[4] = {0, 0, DEG2RAD(dir * -90), DEG2RAD(dir * -90)};
   
   if(turn == 1)  // Turn Left
     {
@@ -244,7 +243,7 @@ void Norn::Turn(float steps, int T, int turn, int dir)
     }
 
    // execute oscillateServos
-   execution(A, O, T, phase_diff, steps);
+   execution(A, O, T, phase_diff, Steps);
 }
 
 /* ======================================================= */
@@ -343,6 +342,62 @@ void Norn::TipToeSwing(int Steps, int T, int h)
 }
 
 /* ======================================================= */
+/* Motion Name: UpDownTurn                                 */
+/* Parameters:                                             */
+/*      steps: Number of Steps                             */
+/*          T: Period                                      */
+/*          h: Amount of TipToeTurn                        */
+/* ======================================================= */
+void Norn::UpDownTurn(int Steps, int T, int h)
+{
+   h=min(h,20);                 //set h <=20 to avoid feet collision
+   int A[4]= {h, h, h, h};
+   int O[4] = {0, 0, h, -h};    // Offset is out of phase for feet to up & down
+   double phase_diff[4] = {DEG2RAD(-90), DEG2RAD(90), DEG2RAD(-90), DEG2RAD(90)};
+
+   execution(A,O,T,phase_diff, 2);
+}
+
+/* ======================================================= */
+/* Motion Name: Moon Walk                                  */
+/* Parameters:                                             */
+/*      steps: Number of Steps                             */
+/*          T: Period                                      */
+/*          h: Amount of TipToeTurn                        */
+/*        dir: Start from Left(1) or Right(-1)             */
+/* ======================================================= */
+void Norn::MoonWalk(int Steps, int T, int h, int dir)
+{
+   h=min(h,30);                       //set h <=30, over 30 looks like not Moon walk.
+   int phi = -dir * 90;
+   int A[4]= {0, 0, h, h};
+   int O[4] = {0, 0, h/2-6, -h/2+6};  //set 1/2 amplitude with 6 delta to simulate more alike moon walk.
+   double phase_diff[4] = {0, 0, DEG2RAD(phi), DEG2RAD(phi-60*dir)};
+
+   execution(A,O,T,phase_diff, 2);
+}
+
+/* ======================================================= */
+/* Motion Name: Worm Walk                                  */
+/*              Add Hip rotation from Moon Walk            */
+/* Parameters:                                             */
+/*      steps: Number of Steps                             */
+/*          T: Period                                      */
+/*          h: Amount of TipToeTurn                        */
+/*        dir: Start from Left(1) or Right(-1)             */
+/* ======================================================= */
+void Norn::WormWalk(int Steps, int T, int h, int dir)
+{
+   h=min(h,30);                       //set h <=30, over 30 looks like not Moon walk.
+   int phi = -dir * 90;
+   int A[4]= {h, h, h, h};
+   int O[4] = {h/2, -h/2, h/2, -h/2};  //set 1/2 amplitude with 6 delta to simulate more alike moon walk.
+   double phase_diff[4] = {DEG2RAD(phi), DEG2RAD(phi-60*dir), DEG2RAD(phi), DEG2RAD(phi-60*dir)};
+
+   execution(A,O,T,phase_diff, 2);
+}
+
+/* ======================================================= */
 /* Motion Name: Jitter (Hip rotates)                       */
 /* Parameters:                                             */
 /*      steps: Number of Steps                             */
@@ -357,6 +412,49 @@ void Norn::Jitter(int Steps, int T, int h)
       double phase_diff[4] = {DEG2RAD(-90), DEG2RAD(90), 0, 0};
 
       execution(A,O,T,phase_diff, Steps);
+}
+
+/* ======================================================= */
+/* Motion Name: Crusatio                                   */
+/* Parameters:                                             */
+/*      steps: Number of Steps                             */
+/*          T: Period                                      */
+/*          h: Height of Crusatio                          */
+/*        dir: LEFT(1)/RIGHT(-1)                           */
+/* ======================================================= */
+void Norn::Crusatio(int Steps, int T, int h, int dir)
+{
+      int _h;
+      if(h>50){
+       _h = min(h,50);
+      }
+      else if(h<20){
+       _h = max(h,20);
+      }
+      else _h = h;
+
+      int A[4]= {25, 25, _h, _h};
+      int O[4] = {0, 0, h/2+4, -h/2-4};
+      double phase_diff[4] = {90, 90, DEG2RAD(0), DEG2RAD(-60*dir)};
+
+      execution(A,O,T,phase_diff, Steps);
+}
+
+/* ======================================================= */
+/* Motion Name: FlapMoving                                 */
+/* Parameters:                                             */
+/*      steps: Number of Steps                             */
+/*          T: Period                                      */
+/*          h: Height of Crusatio                          */
+/*        dir: FORWARD(1)/BACKWARD(-1)                     */
+/* ======================================================= */
+void Norn::FlapMoving(int Steps, int T, int h, int dir)
+{
+      int A[4]= {16, 16, h, h};
+      int O[4] = {0, 0, h - 10, -h + 10};
+      double phase_diff[4] = {DEG2RAD(0), DEG2RAD(180), DEG2RAD(-90*dir), DEG2RAD(90*dir)};
+
+      execution(A, O, T, phase_diff, Steps);
 }
 
 /* ======================================================= */

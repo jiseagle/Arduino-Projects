@@ -42,12 +42,17 @@ class Norn
      void LteralBend(int Steps, int T, int dir);           //Lateral Bend
      void UPDown(int Steps, int T, int h);                 //UPDown
      void swing(int Steps, int T, int h);                  //swing
-     void TipToeSwing(int Steps, int T, int h);            //TipToeSwing
-     void Jitter(int Steps, int T, int h);                 //Jitter           
+     void TipToeSwing(int Steps, int T, int h);            //TipToe Swing
+     void Jitter(int Steps, int T, int h);                 //Jitter
+     void UpDownTurn(int Steps, int T, int h);             //TipToe Turn 
+     void MoonWalk(int Steps, int T, int h, int dir);      //Moon Walk
+     void WormWalk(int Steps, int T, int h, int dir);      //Worm Walk         
+     void Crusatio(int Steps, int T, int h, int dir);      //Crusatio
+     void FlapMoving(int Steps, int T, int h, int dir);    //Flap Move
 
      /* --- Avoidance                                  --- */
      float getDistance();                                  //getDistance() from Ultra Sonic Sensor
-     void Avoidance();                                     //avoidance
+ 
      
  
   private:
