@@ -1,3 +1,8 @@
+/* ============================================================ */
+/* This is a function for Norn robot.                           */
+/* Author: Norman Chen                                          */
+/* License:GPL
+/* ============================================================ */
 #if defined(ARDUINO) && ARDUINO >= 100
   #include "Arduino.h"
 #else
@@ -6,15 +11,11 @@
 #endif
 
 #include "Norn.h"
-#include <Oscillator.h>
-#include <UltraSonicSensor.h>
-//#include <EEPROM.h>
-
 
 /************************************************/
 /* Norn Initialization function                 */
 /************************************************/
-void Norn::init(int YL, int YR, int RL, int RR, bool loadcalibration, int TrigPin, int EchoPin)
+void Norn::init(int YL, int YR, int RL, int RR, bool loadcalibration, int TrigPin, int EchoPin, int SpkPin)
 {
   servo_pins[0]=YL;
   servo_pins[1]=YR;
@@ -43,7 +44,10 @@ void Norn::init(int YL, int YR, int RL, int RR, bool loadcalibration, int TrigPi
   //set Norn's Servo move to reset position
   int resetservos[4] = {90,90,90,90}; 
   moveServos(500, resetservos);
- 
+
+  //init Sound, and wake up sound for Norn
+  sing.init(SpkPin);
+  sing.RobotOn(); 
 }
 
 /*************************************************/

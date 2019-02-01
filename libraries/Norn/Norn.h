@@ -1,3 +1,9 @@
+/* ============================================================ */
+/* This is a function for Norn robot.                           */
+/* Author: Norman Chen                                          */
+/* License:GPL
+/* ============================================================ */
+
 #ifndef Norn_h
 #define Norn_h
 
@@ -5,6 +11,7 @@
 #include <Oscillator.h>
 #include <EEPROM.h>
 #include <UltraSonicSensor.h>
+#include <NornSing.h>
 
 /* -- Define Constant -- */
 #define FORWARD           1
@@ -17,7 +24,7 @@ class Norn
   public:
 
      /* --- Norn initialization --- */
-     void init(int YL, int YR, int RL, int RR, bool loadcalibration, int TrigPin, int EchoPin);
+     void init(int YL, int YR, int RL, int RR, bool loadcalibration, int TrigPin, int EchoPin, int SpkPin);
 
      /* --- Servo attach & dettach functions --- */
      void attachServos();
@@ -59,6 +66,7 @@ class Norn
 
      Oscillator servo[4];
      USS uSS;
+     NornSing sing;
      int servo_pins[4];
      int servo_position[4];
      int servo_trim[4];
