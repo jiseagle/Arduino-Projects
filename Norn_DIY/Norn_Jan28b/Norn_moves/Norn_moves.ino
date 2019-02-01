@@ -40,7 +40,7 @@ void setup() {
   // 5th argument is true to load Servo calibrated trim values
   Norn.init(PIN_YL, PIN_YR, PIN_RL, PIN_RR, true, TrigPin, EchoPin, SpkPin); 
                                                                     
-  //sing.init(11);  
+  //song.init(11);  
   //sing.RobotOn();                                                                  
   Serial.begin(9600);                                               // remove annotation while you need serial port.
   //Norn.setTrims(-10,2,0,-5);                                      // Try calibrated trim manually if needed, then remove annotation mark
@@ -58,7 +58,9 @@ void loop() {
       break;
 
     case(49):
-
+      //sing.Oooh();
+      Norn.music(_Hooo);
+      Norn.MoonWalk(4, 600, 30, 1);
       break;
 
     case(50):
