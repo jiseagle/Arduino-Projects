@@ -14,6 +14,8 @@ class NornSing
           void init(int SpkPin);
           void beep(float freq, long duration);
           void RobotOn();
+          void Oooh();
+          void Hooo();
 
   private:
           int _SpkPin;

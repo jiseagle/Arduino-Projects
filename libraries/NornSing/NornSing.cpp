@@ -57,3 +57,17 @@ void NornSing::RobotOn()
       beep(2291, 100);
 }
 
+void NornSing::Oooh()
+{
+  for (float i=note_C6; i < note_C7; i=i*1.01) {
+     beep(i, 10);
+  }
+}
+
+void NornSing::Hooo()
+{
+  for (float i=note_C7; i > note_C6; i=i*0.99) {
+     beep(i, 10);
+  }
+}
+
