@@ -470,4 +470,17 @@ float Norn::getDistance()
 }
 
 
+void Norn::music(int song)
+{
 
+  switch(song) {
+   
+   case(_Oooh):
+              sing.Oooh();
+              break;
+
+   case(_Hooo):
+              sing.Hooo();
+              break;
+   }
+}

@@ -18,6 +18,8 @@
 #define BACKWARD         -1
 #define LEFT              1
 #define RIGHT            -1
+#define _Oooh             1
+#define _Hooo             2
 
 class Norn
 {
@@ -60,7 +62,7 @@ class Norn
      /* --- Avoidance                                  --- */
      float getDistance();                                  //getDistance() from Ultra Sonic Sensor
  
-     
+     void music(int song);
  
   private:
 
